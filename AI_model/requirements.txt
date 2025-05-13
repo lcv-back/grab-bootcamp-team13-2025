@@ -1,0 +1,14 @@
+lancedb
+pyarrow
+torch
+PIL
+numpy
+pandas
+tqdm
+fastapi
+schemas
+requests
+sentence_transformers
+transformers
+sklearn
+pydantic
