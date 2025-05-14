@@ -127,11 +127,14 @@ async def predict_Symptom(body: Predict):
     for symptom in body.answers:
         print("xx", symptom)
 
+    answers_lower = set(ans.lower() for ans in body.answers)
+    symptoms_lower = set(sym.lower() for sym in body.symptoms)
+
     filtered_top = [
         symptom
         for symptom in raw_top
-        if symptom not in body.answers
-        and symptom not in body.symptoms
+        if symptom.lower() not in answers_lower
+        and symptom.lower() not in symptoms_lower
     ]
 
     final_top = filtered_top[:12]
