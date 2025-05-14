@@ -38,7 +38,7 @@ app.add_middleware(
     )
 
 
-model = Model(link_database="lancedb")
+model = Model(link_database=r"C:\Users\pc\Desktop\grab-bootcamp-team13-2025\AI_model\lancedb")
 selector = SymptomInformationGainSelector(
         disease_symptoms_path='./AI_model/Model/follow_up_ques/diseases_with_symptom_codes.json',
         symptom_mapping_path='./AI_model/Model/follow_up_ques/symptom_groups_semantic.json',
@@ -89,7 +89,7 @@ async def home():
 @app.post("/predict", summary="Predict diseases from symptoms and images")
 async def predict_Symptom(body: Predict):
     global num_download
-    download_dir = "./downloaded_images"
+    download_dir = "./AI_model/downloaded_images"
     if body.image_paths:
         local_paths, downloaded = download_images(body.image_paths, download_dir, num_download)
         num_download = downloaded
