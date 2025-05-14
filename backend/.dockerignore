@@ -1,0 +1,51 @@
+# Thư mục và file tạm thời
+.git
+.gitignore
+tmp/
+
+# File biên dịch và thư mục build
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# File log
+*.log
+
+# Thư mục IDE và editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Thư mục dependencies
+vendor/
+
+# File và thư mục Docker
+Dockerfile
+.dockerignore
+docker-compose.yml
+docker-compose.*.yml
+
+# File README và documentation
+README.md
+docs/
+
+# File cấu hình development
+.env.development
+.env.local
+
+# Thư mục test
+*_test.go
+
+# File binary
+isymptom
+email_worker
+
+# Thư mục cache
+.cache/

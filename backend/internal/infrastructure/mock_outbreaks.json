@@ -1,0 +1,66 @@
+[{
+        "id": "1",
+        "disease": "Dengue - Vietnam",
+        "summary": "Several southern provinces in Vietnam, including Ho Chi Minh City, are reporting a sharp rise in dengue cases as the rainy season begins.",
+        "date": "Mon, 06 May 2025 08:00:00 GMT",
+        "link": "https://promedmail.org/promed-post/?id=20250506.1234567",
+        "who": {
+            "cases": 3520,
+            "deaths": 7,
+            "report_date": "2025-05-05",
+            "source": "https://www.who.int/emergencies/disease-outbreak-news/item/2025-DON-dengue-vietnam"
+        }
+    },
+    {
+        "id": "2",
+        "disease": "Measles - Philippines",
+        "summary": "Health authorities confirm a measles outbreak in parts of Luzon, with hundreds of cases and multiple fatalities reported.",
+        "date": "Fri, 03 May 2025 10:30:00 GMT",
+        "link": "https://promedmail.org/promed-post/?id=20250503.7654321",
+        "who": {
+            "cases": 1280,
+            "deaths": 14,
+            "report_date": "2025-05-03",
+            "source": "https://www.who.int/emergencies/disease-outbreak-news/item/2025-DON-measles-philippines"
+        }
+    },
+    {
+        "id": "3",
+        "disease": "Avian Influenza (H5N1) - Cambodia",
+        "summary": "H5N1 avian influenza has been detected in poultry farms in eastern Cambodia; culling and containment measures are underway.",
+        "date": "Wed, 01 May 2025 07:45:00 GMT",
+        "link": "https://promedmail.org/promed-post/?id=20250501.6789012",
+        "who": {
+            "cases": 1,
+            "deaths": 1,
+            "report_date": "2025-05-01",
+            "source": "https://www.who.int/emergencies/disease-outbreak-news/item/2025-DON-h5n1-cambodia"
+        }
+    },
+    {
+        "id": "4",
+        "disease": "Cholera - Mozambique",
+        "summary": "The Ministry of Health has declared a cholera emergency due to widespread cases in central Mozambique, following flooding.",
+        "date": "Sat, 04 May 2025 11:20:00 GMT",
+        "link": "https://promedmail.org/promed-post/?id=20250504.8901234",
+        "who": {
+            "cases": 6790,
+            "deaths": 52,
+            "report_date": "2025-05-04",
+            "source": "https://www.who.int/emergencies/disease-outbreak-news/item/2025-DON-cholera-mozambique"
+        }
+    },
+    {
+        "id": "5",
+        "disease": "MERS-CoV - Saudi Arabia",
+        "summary": "A new case of MERS-CoV has been confirmed in Riyadh; investigations into exposure sources are ongoing.",
+        "date": "Tue, 07 May 2025 09:00:00 GMT",
+        "link": "https://promedmail.org/promed-post/?id=20250507.1122334",
+        "who": {
+            "cases": 1,
+            "deaths": 0,
+            "report_date": "2025-05-06",
+            "source": "https://www.who.int/emergencies/disease-outbreak-news/item/2025-DON-mers-saudi-arabia"
+        }
+    }
+]

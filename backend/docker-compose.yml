@@ -1,0 +1,204 @@
+version: '3.8'
+
+services:
+  # RabbitMQ
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"   # AMQP protocol port
+      - "15672:15672" # Management UI port
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - default
+
+  # MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    ports:
+      - "3307:3306"  # Thay đổi port từ 3306 thành 3307
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - default
+
+  # Redis
+  redis:
+    image: redis:7.0
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - default
+
+  # MinIO
+  minio:
+    image: minio/minio
+    container_name: minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
+    volumes:
+      - minio-data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - default
+
+  # Elasticsearch
+  # elasticsearch:
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+  #   container_name: elasticsearch
+  #   environment:
+  #     - discovery.type=single-node
+  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+  #   ports:
+  #     - "9200:9200"
+  #   volumes:
+  #     - elasticsearch-data:/usr/share/elasticsearch/data
+  #   networks:
+  #     - monitoring
+
+  # Logstash
+  # logstash:
+  #   image: docker.elastic.co/logstash/logstash:7.17.0
+  #   container_name: logstash
+  #   ports:
+  #     - "5044:5044"
+  #     - "5000:5000/tcp"
+  #     - "5000:5000/udp"
+  #     - "9600:9600"
+  #   volumes:
+  #     - ./logstash/config:/usr/share/logstash/config
+  #     - ./logstash/pipeline:/usr/share/logstash/pipeline
+  #   networks:
+  #     - monitoring
+  #   depends_on:
+  #     - elasticsearch
+
+  # Kibana
+  # kibana:
+  #   image: docker.elastic.co/kibana/kibana:7.17.0
+  #   container_name: kibana
+  #   ports:
+  #     - "5601:5601"
+  #   environment:
+  #     - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+  #   networks:
+  #     - monitoring
+  #   depends_on:
+  #     - elasticsearch
+
+  # Prometheus
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   container_name: prometheus
+  #   ports:
+  #     - "9090:9090"
+  #   volumes:
+  #     - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+  #     - prometheus-data:/prometheus
+  #   networks:
+  #     - monitoring
+
+  # Grafana
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   container_name: grafana
+  #   ports:
+  #     - "3000:3000"
+  #   volumes:
+  #     - grafana-data:/var/lib/grafana
+  #   networks:
+  #     - monitoring
+  #   depends_on:
+  #     - prometheus
+
+  # Application
+  app:
+    build: .
+    ports:
+      - "3001:3001"
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - DB_HOST=mysql
+      - DB_PORT=3307  # Cập nhật port mới
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
+      - REDIS_URL=redis:6379
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PORT=${EMAIL_PORT}
+      - EMAIL_USERNAME=${EMAIL_USERNAME}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - MINIO_ENDPOINT=http://minio:9000
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - MINIO_BUCKET=${MINIO_BUCKET}
+      - MINIO_USE_SSL=false
+      - ML_URL=https://cicada-logical-virtually.ngrok-free.app/predict
+    command: ./isymptom
+
+    networks:
+      - default
+      - monitoring
+    depends_on:
+      - mysql
+      - redis
+      - rabbitmq
+      - minio
+
+  # Email Worker
+  email-worker:
+    build: .
+    working_dir: /app
+    command: ./email_worker
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PORT=${EMAIL_PORT}
+      - EMAIL_USERNAME=${EMAIL_USERNAME}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=mysql
+      - DB_PORT=3307  # Updated to match the new MySQL port
+    networks:
+      - monitoring
+      - default
+    depends_on:
+      - mysql
+      - rabbitmq
+
+volumes:
+  elasticsearch-data:
+  prometheus-data:
+  grafana-data:
+  mysql-data:
+  redis-data:
+  minio-data:
+  rabbitmq-data:
+
+networks:
+  monitoring:
+    driver: bridge
+  default:
+    driver: bridge
+

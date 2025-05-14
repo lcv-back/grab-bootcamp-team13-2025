@@ -1,0 +1,1261 @@
+openapi: 3.0.3
+info:
+  title: iSymptom API
+  description: API documentation for the iSymptom application, providing user authentication and symptom-based disease diagnosis.
+  version: 1.0.0
+servers:
+  - url: https://isymptom.vercel.app
+paths:
+  /auth/signup:
+    post:
+      summary: Register a new user
+      description: Creates a new user account with the specified role (user or admin). If role is not provided, defaults to "user".
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignupRequest"
+            examples:
+              user:
+                summary: Register as a user
+                value:
+                  email: "user01@example.com"
+                  fullname: "John Doe"
+                  birthday: "1995-05-15T00:00:00Z"
+                  gender: "male"
+                  password: "User1@pass"
+              admin:
+                summary: Register as an admin
+                value:
+                  email: "admin@example.com"
+                  fullname: "Admin User"
+                  birthday: "1990-03-22T00:00:00Z"
+                  gender: "male"
+                  password: "admin@pass"
+                  role: "admin"
+      responses:
+        "201":
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                message: "Created user successfully"
+                status: "success"
+        "400":
+          description: Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Invalid data: invalid email format"
+        "409":
+          description: Email already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Email already exists"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Error handling password"
+  /api/hospitals/nearest:
+    get:
+      summary: Find nearest hospitals
+      description: Returns a list of hospitals nearest to the user's location (by lat, lng). Only hospitals with complete information (name, address, lat, lng) are included, and any hospital whose name contains "skin clinic" (case-insensitive) is excluded. Results are sorted by distance_km in ascending order.
+      tags:
+        - Hospital
+      parameters:
+        - in: query
+          name: lat
+          schema:
+            type: number
+            format: float
+          required: true
+          description: User's latitude
+        - in: query
+          name: lng
+          schema:
+            type: number
+            format: float
+          required: true
+          description: User's longitude
+        - in: query
+          name: radius
+          schema:
+            type: number
+            format: float
+            default: 10
+          required: false
+          description: Search radius in kilometers (default: 10km)
+      responses:
+        '200':
+          description: List of nearest hospitals
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  hospitals:
+                    type: array
+                    items:
+                      type: object
+                    properties:
+                      name:
+                        type: string
+                        example: "Bach Mai Hospital"
+                      address:
+                        type: string
+                        example: "78 Giai Phong, Dong Da, Ha Noi"
+                      lat:
+                        type: number
+                        format: float
+                        example: 21.0021
+                      lng:
+                        type: number
+                        format: float
+                        example: 105.8412
+                      distance_km:
+                        type: number
+                        format: float
+                        example: 2.5
+              example:
+                hospitals:
+                  - name: "Bach Mai Hospital"
+                    address: "78 Giai Phong, Dong Da, Ha Noi"
+                    lat: 21.0021
+                    lng: 105.8412
+                    distance_km: 2.5
+                  - name: "Saint Paul Hospital"
+                    address: "12 Chu Van An, Ba Dinh, Ha Noi"
+                    lat: 21.0332
+                    lng: 105.8345
+                    distance_km: 3.1
+        '400':
+          description: Invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Missing or invalid lat/lng"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Internal server error"
+
+    post:
+      summary: Register a new user
+      description: Creates a new user account with the specified role (user or admin). If role is not provided, defaults to "user".
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignupRequest"
+            examples:
+              user:
+                summary: Register as a user
+                value:
+                  email: "user01@example.com"
+                  fullname: "John Doe"
+                  birthday: "1995-05-15T00:00:00Z"
+                  gender: "male"
+                  password: "User1@pass"
+              admin:
+                summary: Register as an admin
+                value:
+                  email: "admin@example.com"
+                  fullname: "Admin User"
+                  birthday: "1990-03-22T00:00:00Z"
+                  gender: "male"
+                  password: "admin@pass"
+                  role: "admin"
+      responses:
+        "201":
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                message: "Created user successfully"
+                status: "success"
+        "400":
+          description: Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Invalid data: invalid email format"
+        "409":
+          description: Email already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Email already exists"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Error handling password"
+  /auth/login:
+    post:
+      summary: Login to the application
+      description: Authenticates a user and returns a JWT token for accessing protected endpoints.
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+            example:
+              email: "user01@example.com"
+              password: "User1@pass"
+      responses:
+        "200":
+          description: Login successful, returns JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                status: "success"
+        "400":
+          description: Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Invalid data: email is required"
+        "401":
+          description: Invalid email or password
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Email or password is incorrect"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Failed to generate JWT"
+  /auth/forgot-password:
+    post:
+      summary: Request password reset
+      description: Sends a password reset link to the user's email address.
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: Email address of the user.
+                  example: "user@example.com"
+      responses:
+        "200":
+          description: Reset password email sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                message: "Reset password link has been sent to your email"
+                status: "success"
+        "400":
+          description: Invalid email format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Invalid data: invalid email format"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "User not found"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Failed to send reset password email"
+  /auth/reset-password:
+    post:
+      summary: Reset password
+      description: Resets the user's password using the token received via email.
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+                - new_password
+              properties:
+                token:
+                  type: string
+                  description: Reset password token received via email.
+                  example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                new_password:
+                  type: string
+                  description: New password (minimum 8 characters).
+                  example: "newpassword123"
+                  minLength: 8
+      responses:
+        "200":
+          description: Password reset successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                message: "Password has been reset successfully"
+                status: "success"
+        "400":
+          description: Invalid request format or password requirements not met
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Invalid request format"
+        "401":
+          description: Invalid or expired token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Invalid or expired reset token"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Failed to reset password"
+  /auth/me:
+    get:
+      summary: Get current user information
+      description: Returns the information of the currently logged-in user based on the JWT token.
+      tags:
+        - Authentication
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: User information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+              example:
+                id: 1
+                email: "user@example.com"
+                fullname: "John Doe"
+                birthday: "1995-05-15T00:00:00Z"
+                gender: "male"
+                role: "user"
+                created_at: "2025-04-23T10:30:00Z"
+                updated_at: "2025-04-23T10:30:00Z"
+        "401":
+          description: Unauthorized (missing or invalid token)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Unauthorized"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "User not found"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Internal server error"
+  /disease:
+    get:
+      summary: Get disease description by name
+      description: Returns the description of a disease by its name
+      tags:
+        - Disease
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+          required: true
+          description: The name of the disease
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: "Pneumonia"
+                  description:
+                    type: string
+                    example: "Pneumonia is an infection that inflames the air sacs in one or both lungs."
+        '400':
+          description: Bad request (missing or invalid disease name)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Disease name is required"
+        '404':
+          description: Disease not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Disease not found"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Failed to fetch disease description"
+  /api/symptoms/upload:
+    post:
+      summary: Upload symptom image
+      description: Uploads an image file for a symptom. Requires JWT authentication.
+      tags:
+        - Symptoms
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Image file to upload (JPG, JPEG, PNG)
+            encoding:
+              file:
+                contentType: image/png, image/jpeg
+      responses:
+        "200":
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  url:
+                    type: string
+              example:
+                message: "File uploaded successfully"
+                url: "http://minio:9000/isymptom-bucket/symptoms/3_20250428134233_image_smaller_size.png"
+        "400":
+          description: Bad request (no file or invalid file)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "No file uploaded"
+        "401":
+          description: Unauthorized (missing or invalid token)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Unauthorized"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Internal server error"
+  /api/symptoms/add:
+    post:
+      summary: Submit symptoms and images for diagnosis
+      description: Submits 3–5 symptoms (text) and optional images for disease diagnosis. Stores images in MinIO, extracts symptoms from images via ML server, and forwards to /predict for diagnosis. Requires JWT authentication.
+      tags:
+        - Symptoms
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                symptoms:
+                  type: array
+                  items:
+                    type: string
+                  description: List of 3–5 symptom descriptions (e.g., "cough", "fever")
+                  minItems: 3
+                  maxItems: 5
+                images:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: Optional images related to symptoms (e.g., skin rash)
+              required:
+                - symptoms
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictResponse'
+              examples:
+                diagnosis:
+                  summary: Confident diagnosis
+                  value:
+                    user_id: 1
+                    predicted_diseases:
+                      - name: "Pneumonia"
+                        probability: 95.5
+                    symptom_followups: []
+                    message: "Diagnosis completed"
+                followup:
+                  summary: Need follow-up
+                  value:
+                    user_id: 1
+                    predicted_diseases:
+                      - name: "Acne"
+                        probability: 49.795
+                    symptom_followups: ["chest pain", "shortness of breath"]
+                    message: "More information needed, please provide additional symptoms"
+        "400":
+          description: Invalid request (e.g., fewer than 3 symptoms)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              example:
+                error: "Invalid data: at least 3 symptoms required"
+        "401":
+          description: Unauthorized (missing or invalid token)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              example:
+                error: "Unauthorized"
+        "500":
+          description: Internal server error (e.g., ML server failure)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              example:
+                error: "Failed to connect to ML server"
+  /predict:
+    post:
+      summary: Predict diseases from symptoms and images
+      description: Receives a list of user symptoms, images, and previous answers, predicts diseases with probabilities, and suggests follow-up symptoms if needed. Calls ML server to process up to 5 iterations.
+      tags:
+        - Machine Learning
+      operationId: predictDisease
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                  format: uint64
+                  example: 1
+                  description: ID of the user.
+                symptoms:
+                  type: array
+                  items:
+                    type: string
+                  example: ["cough", "fever"]
+                  description: List of symptom names.
+                image_paths:
+                  type: array
+                  items:
+                    type: string
+                  example: ["http://minio:9000/isymptom-bucket/symptoms/3_20250428134233_image_smaller_size.png"]
+                  description: List of image URLs (can be empty).
+                answers:
+                  type: object
+                  additionalProperties:
+                    type: string
+                  description: Map of symptom IDs to answers (optional, used for follow-up iterations)
+                  example:
+                    symptom_1: "Yes"
+                    symptom_2: "No"
+              required:
+                - user_id
+                - symptoms
+      responses:
+        "200":
+          description: Successfully predicted diseases
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictResponse'
+              examples:
+                diagnosis:
+                  summary: Confident diagnosis
+                  value:
+                    user_id: 1
+                    predicted_diseases:
+                      - name: "Pneumonia"
+                        probability: 95.5
+                    symptom_followups: []
+                    message: "Diagnosis completed"
+                followup:
+                  summary: Need follow-up
+                  value:
+                    user_id: 1
+                    predicted_diseases:
+                      - name: "Acne"
+                        probability: 49.795
+                    symptom_followups: ["chest pain", "shortness of breath"]
+                    message: "More information needed, please provide additional symptoms"
+                ambiguous:
+                  summary: Ambiguous after max iterations
+                  value:
+                    user_id: 1
+                    predicted_diseases:
+                      - name: "Pneumonia"
+                        probability: 45.0
+                      - name: "Influenza"
+                        probability: 40.0
+                    symptom_followups: []
+                    message: "Diagnosis unclear, please consult a doctor"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Invalid request payload"
+        "401":
+          description: Unauthorized (missing or invalid token)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Unauthorized"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Internal server error"
+  /api/symptoms/autocomplete:
+    get:
+      tags:
+        - Symptoms
+      summary: Autocomplete symptom names
+      description: Returns a list of suggested symptoms based on search query
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: query
+          schema:
+            type: string
+          required: true
+          description: Search keyword for symptom names
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number for pagination
+        - in: query
+          name: size
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+          description: Number of items per page
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          format: uint64
+                          example: 1
+                          description: Symptom ID
+                        name:
+                          type: string
+                          example: "Fever"
+                          description: Symptom name
+                  pagination:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                        example: 1
+                      page_size:
+                        type: integer
+                        example: 10
+                      total:
+                        type: integer
+                        example: 100
+        '400':
+          description: Query parameter is missing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Query parameter is required"
+        '401':
+          description: Unauthorized or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "User ID not found in context"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Internal server error"
+  /api/update-info:
+    patch:
+      summary: Update user information
+      description: Updates the current user's information. All fields are optional - only provided fields will be updated.
+      tags:
+        - Authentication
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fullname:
+                  type: string
+                  description: User's full name (3-100 characters)
+                  example: "John Doe"
+                  minLength: 3
+                  maxLength: 100
+                birthday:
+                  type: string
+                  format: date-time
+                  description: User's birthday in ISO 8601 format
+                  example: "1995-05-15T00:00:00Z"
+                gender:
+                  type: string
+                  description: User's gender
+                  enum: [male, female, other]
+                  example: "male"
+                current_password:
+                  type: string
+                  description: Current password (required when changing password)
+                  example: "oldpassword123"
+                  minLength: 8
+                  maxLength: 100
+                new_password:
+                  type: string
+                  description: New password (8-100 characters)
+                  example: "newpassword123"
+                  minLength: 8
+                  maxLength: 100
+      responses:
+        "200":
+          description: Information updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                message: "User information updated successfully"
+                status: "success"
+        "400":
+          description: Invalid input data or password validation failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              examples:
+                invalidData:
+                  summary: Invalid data format
+                  value:
+                    error: "Invalid data: fullname must be between 3 and 100 characters"
+                passwordMismatch:
+                  summary: Current password incorrect
+                  value:
+                    error: "Current password is incorrect"
+                passwordRequired:
+                  summary: Missing current password
+                  value:
+                    error: "Current password is required when changing password"
+        "401":
+          description: Unauthorized (missing or invalid token)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Unauthorized"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Failed to update user information"
+  /api/hospitals/nearest:
+    get:
+      summary: Find nearest hospitals
+      description: Returns a list of hospitals nearest to the user's location (by lat, lng).
+      tags:
+        - Hospital
+      parameters:
+        - in: query
+          name: lat
+          schema:
+            type: number
+            format: float
+          required: true
+          description: User's latitude
+        - in: query
+          name: lng
+          schema:
+            type: number
+            format: float
+          required: true
+          description: User's longitude
+        - in: query
+          name: radius
+          schema:
+            type: number
+            format: float
+            default: 10
+          required: false
+          description: Search radius in kilometers (default: 10km)
+      responses:
+        '200':
+          description: List of nearest hospitals
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  hospitals:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          example: "Bach Mai Hospital"
+                        address:
+                          type: string
+                          example: "78 Giai Phong, Dong Da, Ha Noi"
+                        lat:
+                          type: number
+                          format: float
+                          example: 21.0021
+                        lng:
+                          type: number
+                          format: float
+                          example: 105.8412
+                        distance_km:
+                          type: number
+                          format: float
+                          example: 2.5
+              example:
+                hospitals:
+                  - name: "Bach Mai Hospital"
+                    address: "78 Giai Phong, Dong Da, Ha Noi"
+                    lat: 21.0021
+                    lng: 105.8412
+                    distance_km: 2.5
+                  - name: "Saint Paul Hospital"
+                    address: "12 Chu Van An, Ba Dinh, Ha Noi"
+                    lat: 21.0332
+                    lng: 105.8345
+                    distance_km: 3.1
+        '400':
+          description: Invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Missing or invalid lat/lng"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                error: "Internal server error"
+components:
+  schemas:
+    Outbreak:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Internal unique identifier (RSS ID or UUID)
+          example: "12345"
+        disease:
+          type: string
+          description: Disease name (parsed from ProMED RSS)
+          example: "Measles"
+        summary:
+          type: string
+          description: Short description (from RSS description)
+          example: "Outbreak reported in Nigeria affecting 80+ children."
+        date:
+          type: string
+          format: date
+          description: Publication date (from RSS pubDate)
+          example: "2025-05-13"
+        link:
+          type: string
+          format: uri
+          description: Link to original post (from RSS link)
+          example: "https://promedmail.org/post/xyz123"
+        who:
+          $ref: '#/components/schemas/OutbreakWho'
+          description: WHO statistics if mapped, otherwise null
+          nullable: true
+    OutbreakWho:
+      type: object
+      properties:
+        cases:
+          type: integer
+          description: Number of cases
+          example: 3820
+        deaths:
+          type: integer
+          description: Number of deaths
+          example: 210
+        last_updated:
+          type: string
+          description: Last updated year or date
+          example: "2024"
+
+  schemas:
+    SignupRequest:
+      type: object
+      required:
+        - email
+        - fullname
+        - birthday
+        - gender
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          description: Email address of the user (must be unique).
+          example: "user01@example.com"
+        fullname:
+          type: string
+          description: Full name of the user.
+          example: "John Doe"
+        birthday:
+          type: string
+          format: date-time
+          description: Birthday of the user in RFC3339 format.
+          example: "1995-05-15T00:00:00Z"
+        gender:
+          type: string
+          enum: ["male", "female", "other"]
+          description: Gender of the user.
+          example: "male"
+        password:
+          type: string
+          description: Password of the user (minimum 8 characters).
+          example: "user12345678"
+        role:
+          type: string
+          enum: ["user", "admin"]
+          description: Role of the user (defaults to "user" if not provided).
+          example: "admin"
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          description: Email address of the user.
+          example: "user@example.com"
+        password:
+          type: string
+          description: Password of the user.
+          example: "User1@pass"
+    UserSymptom:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: uint64
+          description: Unique identifier of the user symptom.
+          example: 1
+        user_id:
+          type: integer
+          format: uint64
+          description: ID of the user.
+          example: 1
+        symptom_id:
+          type: integer
+          format: uint64
+          description: ID of the symptom (0 if not linked to a predefined symptom).
+          example: 1
+        name:
+          type: string
+          description: Name of the symptom.
+          example: "Fever"
+        image_path:
+          type: string
+          description: URL of the associated image (empty if no image).
+          example: "http://localhost:9000/isymptom-bucket/symptoms/1_20250504194753_image_smaller_size.png"
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp in RFC3339 format.
+          example: "2025-05-04T19:41:58Z"
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the user.
+          example: 1
+        email:
+          type: string
+          format: email
+          description: Email address of the user.
+          example: "user@example.com"
+        fullname:
+          type: string
+          description: Full name of the user.
+          example: "John Doe"
+        birthday:
+          type: string
+          format: date-time
+          description: Birthday of the user in RFC3339 format.
+          example: "1995-05-15T00:00:00Z"
+        gender:
+          type: string
+          enum: ["male", "female", "other"]
+          description: Gender of the user.
+          example: "male"
+        role:
+          type: string
+          enum: ["user", "admin"]
+          description: Role of the user.
+          example: "user"
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp in RFC3339 format.
+          example: "2025-04-23T10:30:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update timestamp in RFC3339 format.
+          example: "2025-04-23T10:30:00Z"
+    Response:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Success message (if applicable).
+          example: "Created user successfully"
+        status:
+          type: string
+          description: Status of the response (e.g., "success").
+          example: "success"
+        token:
+          type: string
+          description: JWT token (for login).
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        error:
+          type: string
+          description: Error message (if applicable).
+          example: "Email already exists"
+    Symptom:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique symptom ID
+          example: "symptom_1"
+        name:
+          type: string
+          description: Symptom name
+          example: "Cough"
+        description:
+          type: string
+          description: Symptom description
+          example: "Persistent coughing"
+        possible_values:
+          type: string
+          description: JSON string of possible answer values
+          example: "[\"Yes\",\"No\",\"Not sure\"]"
+      required:
+        - id
+        - name
+    Disease:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Disease name
+          example: "Pneumonia"
+        probability:
+          type: number
+          format: float
+          description: Confidence score (0–100)
+          example: 95.5
+      required:
+        - name
+        - probability
+    PredictResponse:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          format: uint64
+          description: ID of the user
+          example: 1
+        predicted_diseases:
+          type: array
+          items:
+            $ref: '#/components/schemas/Disease'
+          description: List of predicted diseases with probabilities
+        symptom_followups:
+          type: array
+          items:
+            type: string
+          description: List of symptom names to follow up (empty if diagnosis is final)
+          example: ["chest pain", "shortness of breath"]
+        message:
+          type: string
+          description: Additional message (e.g., diagnosis status or recommendation)
+          example: "More information needed, please provide additional symptoms"
+      required:
+        - user_id
+        - predicted_diseases
+        - symptom_followups
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

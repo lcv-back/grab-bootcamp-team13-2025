@@ -1,0 +1,10 @@
+{"level":"info","test":"file","time":"2025-05-08T18:46:29+07:00","message":"Test file output"}
+{"level":"error","test":"file_error","time":"2025-05-08T18:46:29+07:00","message":"Test error in file"}
+{"level":"info","test":"file","time":"2025-05-11T09:49:35+07:00","message":"Test file output"}
+{"level":"error","test":"file_error","time":"2025-05-11T09:49:35+07:00","message":"Test error in file"}
+{"level":"info","test":"file","time":"2025-05-11T09:51:21+07:00","message":"Test file output"}
+{"level":"error","test":"file_error","time":"2025-05-11T09:51:21+07:00","message":"Test error in file"}
+{"level":"info","test":"file","time":"2025-05-11T09:51:48+07:00","message":"Test file output"}
+{"level":"error","test":"file_error","time":"2025-05-11T09:51:48+07:00","message":"Test error in file"}
+{"level":"info","test":"file","time":"2025-05-11T09:53:37+07:00","message":"Test file output"}
+{"level":"error","test":"file_error","time":"2025-05-11T09:53:37+07:00","message":"Test error in file"}

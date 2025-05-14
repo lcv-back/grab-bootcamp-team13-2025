@@ -1,0 +1,30 @@
+server:
+  port: 3001
+  mode: "development"
+redis:
+  url: "167.253.158.16:6379"
+rabbitmq:
+  url: "amqp://admin:admin@167.253.158.16:5672/"
+database:
+  host: "167.253.158.16"
+  port: 3306
+  user: "vile"
+  password: "Lecongvi1805@@"
+  name: "isymptom"
+  charset: "utf8mb4"
+  parse_time: true
+  loc: "Local"
+minio:
+  endpoint: "http://167.253.158.16:9000"
+  access_key: minioadmin
+  secret_key: minioadmin
+  bucket: isymptom-bucket
+  use_ssl: false
+mlservice:
+  url: "https://cicada-logical-virtually.ngrok-free.app"
+email:
+  smtp_host: "smtp.gmail.com"
+  smtp_port: "587"
+  smtp_user: "no-reply@isymptom.id.vn"
+  smtp_password: "zsaf hswy zefl gguu"
+  from_email: "no-reply@isymptom.id.vn"

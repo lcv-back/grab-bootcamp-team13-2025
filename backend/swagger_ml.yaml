@@ -1,0 +1,90 @@
+openapi: 3.0.3
+info:
+  title: Machine Learning Service API
+  description: API to predict diseases based on user symptoms and images.
+  version: 1.0.0
+
+paths:
+  /predict:
+    post:
+      summary: Predict diseases from symptoms and images
+      description: Receives a list of user symptoms and images, returns a list of predicted diseases with probabilities.
+      operationId: predictDisease
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                  format: uint64
+                  example: 1
+                  description: ID of the user.
+                symptoms:
+                  type: array
+                  items:
+                    type: string
+                  example: ["Night Sweats", "Fever"]
+                  description: List of symptom names.
+                image_paths:
+                  type: array
+                  items:
+                    type: string
+                  example: ["http://minio:9000/isymptom-bucket/symptoms/3_20250428134233_image_smaller_size.png"]
+                  description: List of image URLs (can be empty).
+              required:
+                - user_id
+                - symptoms
+      responses:
+        "200":
+          description: Successfully predicted diseases
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: integer
+                    format: uint64
+                    example: 1
+                    description: ID of the user.
+                  predicted_diseases:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          example: "Flu"
+                          description: Name of the disease.
+                        probability:
+                          type: number
+                          format: float
+                          example: 0.85
+                          description: Probability of the disease (from 0 to 1).
+                    description: List of predicted diseases with probabilities.
+                required:
+                  - user_id
+                  - predicted_diseases
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid request payload"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Internal server error"
