@@ -124,8 +124,6 @@ async def predict_Symptom(body: Predict):
         predicted_records=results_formatted,
         top_n=100
     )
-    for symptom in body.answers:
-        print("xx", symptom)
 
     answers_lower = set(ans.lower() for ans in body.answers)
     symptoms_lower = set(sym.lower() for sym in body.symptoms)

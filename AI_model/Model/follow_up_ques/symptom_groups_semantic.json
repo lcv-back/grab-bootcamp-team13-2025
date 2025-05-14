@@ -10967,21 +10967,6 @@
     "symptom_code": "S1143"
   },
   {
-    "canonical": "No symptoms",
-    "aliases": [
-      "No apparent symptoms",
-      "No noticeable symptoms",
-      "No obvious symptoms",
-      "No other symptoms",
-      "No signs or symptoms",
-      "No specific symptoms",
-      "No symptoms",
-      "No symptoms at all",
-      "No visible signs or symptoms"
-    ],
-    "symptom_code": "S1144"
-  },
-  {
     "canonical": "Macula changes",
     "aliases": [
       "Macula changes"
@@ -68475,13 +68460,6 @@
     "symptom_code": "S8905"
   },
   {
-    "canonical": "No symptoms in early stages",
-    "aliases": [
-      "No symptoms in early stages"
-    ],
-    "symptom_code": "S8906"
-  },
-  {
     "canonical": "Signs of colonic cancer",
     "aliases": [
       "Signs of colonic cancer"
@@ -86625,13 +86603,6 @@
       "Gradual growth"
     ],
     "symptom_code": "S11450"
-  },
-  {
-    "canonical": "No symptoms initially",
-    "aliases": [
-      "No symptoms initially"
-    ],
-    "symptom_code": "S11451"
   },
   {
     "canonical": "Painful ulcerative masses",
