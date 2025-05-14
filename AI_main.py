@@ -38,7 +38,7 @@ app.add_middleware(
     )
 
 
-model = Model(link_database=r"C:\Users\pc\Desktop\grab-bootcamp-team13-2025\AI_model\lancedb")
+model = Model(link_database="./AI_model/lancedb")
 selector = SymptomInformationGainSelector(
         disease_symptoms_path='./AI_model/Model/follow_up_ques/diseases_with_symptom_codes.json',
         symptom_mapping_path='./AI_model/Model/follow_up_ques/symptom_groups_semantic.json',
