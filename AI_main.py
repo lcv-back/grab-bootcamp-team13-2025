@@ -92,7 +92,7 @@ async def predict_Symptom(body: Predict):
     download_dir = "./AI_model/downloaded_images"
     if body.image_paths:
         local_paths, downloaded = download_images(body.image_paths, download_dir, num_download)
-        num_download = downloaded
+        num_download += downloaded
 
     else:
         local_paths = None
@@ -136,6 +136,14 @@ async def predict_Symptom(body: Predict):
     ]
 
     final_top = filtered_top[:12]
+
+    if local_paths != []:
+        for path in local_paths:
+            try:
+                os.remove(path)
+            except OSError as e:
+                print(f"Error deleting file {path}: {e}")
+        num_download -= downloaded
 
     return {
         "user_id": body.user_id,
