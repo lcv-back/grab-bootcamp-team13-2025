@@ -137,13 +137,15 @@ async def predict_Symptom(body: Predict):
 
     final_top = filtered_top[:12]
 
-    if local_paths != [] or local_paths is not None:
+    if local_paths != [] and local_paths is not None:
         for path in local_paths:
             try:
                 os.remove(path)
             except OSError as e:
                 print(f"Error deleting file {path}: {e}")
         num_download -= downloaded
+        local_paths = []
+
 
     return {
         "user_id": body.user_id,
