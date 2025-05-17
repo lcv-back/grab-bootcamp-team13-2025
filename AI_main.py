@@ -137,7 +137,7 @@ async def predict_Symptom(body: Predict):
 
     final_top = filtered_top[:12]
 
-    if local_paths != []:
+    if local_paths != [] or local_paths is not None:
         for path in local_paths:
             try:
                 os.remove(path)
