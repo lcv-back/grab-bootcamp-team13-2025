@@ -38,7 +38,7 @@ app.add_middleware(
     )
 
 
-model = Model(link_database=r"C:\Users\pc\Desktop\grab-bootcamp-team13-2025\AI_model\lancedb")
+model = Model(link_database="./AI_model/lancedb")
 selector = SymptomInformationGainSelector(
         disease_symptoms_path='./AI_model/Model/follow_up_ques/diseases_with_symptom_codes.json',
         symptom_mapping_path='./AI_model/Model/follow_up_ques/symptom_groups_semantic.json',
@@ -92,7 +92,7 @@ async def predict_Symptom(body: Predict):
     download_dir = "./AI_model/downloaded_images"
     if body.image_paths:
         local_paths, downloaded = download_images(body.image_paths, download_dir, num_download)
-        num_download = downloaded
+        num_download += downloaded
 
     else:
         local_paths = None
@@ -124,17 +124,28 @@ async def predict_Symptom(body: Predict):
         predicted_records=results_formatted,
         top_n=100
     )
-    for symptom in body.answers:
-        print("xx", symptom)
+
+    answers_lower = set(ans.lower() for ans in body.answers)
+    symptoms_lower = set(sym.lower() for sym in body.symptoms)
 
     filtered_top = [
         symptom
         for symptom in raw_top
-        if symptom not in body.answers
-        and symptom not in body.symptoms
+        if symptom.lower() not in answers_lower
+        and symptom.lower() not in symptoms_lower
     ]
 
     final_top = filtered_top[:12]
+
+    if local_paths != [] and local_paths is not None:
+        for path in local_paths:
+            try:
+                os.remove(path)
+            except OSError as e:
+                print(f"Error deleting file {path}: {e}")
+        num_download -= downloaded
+        local_paths = []
+
 
     return {
         "user_id": body.user_id,
